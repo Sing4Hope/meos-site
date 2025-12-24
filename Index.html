@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>MEOS</title>
+  <style>
+    body { font-family: Arial; background:#0b1220; color:white; padding:20px }
+    .card { background:#101b33; padding:12px; margin:10px 0; border-radius:10px }
+    input { padding:8px; margin-bottom:10px; width:250px }
+  </style>
+</head>
+<body>
+  <h1>MEOS Dashboard</h1>
+
+  <input id="search" placeholder="Zoeken..." />
+
+  <div id="list">Gegevens laden…</div>
+
+  <script>
+    // ⬇️ VUL HIER JE SERVER-URL IN
+    const API = "https://meos-server-iets.vercel.app";
+
+    async function load(q="") {
+      const url = q
+        ? `${API}/api/meos`  // simpel houden voor nu
+        : `${API}/api/meos`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+
+      data.slice().reverse().forEach(r => {
+        const d = document.createElement("div");
+        d.className = "card";
+        d.innerHTML = `
+          <b>${r.officer || "Agent onbekend"}</b><br/>
+          Speler: ${r.suspect || "-"}<br/>
+          Reden: ${r.reason || "-"}<br/>
+          Kenteken: ${r.plate || "-"}<br/>
+          Boete: €${r.fine || 0}<br/>
+          <small>${r.time || ""}</small>
+        `;
+        list.appendChild(d);
+      });
+    }
+
+    document.getElementById("search").addEventListener("input", e => load(e.target.value));
+    load();
+  </script>
+</body>
+</html>
